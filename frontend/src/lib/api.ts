@@ -20,6 +20,61 @@ function resolveApiBaseUrl(): string {
 
 export const API_BASE_URL = resolveApiBaseUrl();
 
+/* ------------------------------------------------------------ cold starts ---
+ * Free hosting (Render free tier) puts the backend to sleep after ~15 idle
+ * minutes and takes up to a minute to wake. During that window requests fail
+ * at the network level or get 502/503/504. Instead of showing an error (or
+ * logging the user out), retry with backoff for up to WAKE_BUDGET_MS and let
+ * the UI show a "waking up" notice.
+ */
+const WAKE_BUDGET_MS = 90_000;
+const WAKE_STATUSES = new Set([502, 503, 504]);
+let waking = false;
+const wakeListeners = new Set<(waking: boolean) => void>();
+
+function setWaking(next: boolean) {
+  if (waking === next) return;
+  waking = next;
+  wakeListeners.forEach((fn) => fn(next));
+}
+
+export function onWakeChange(fn: (waking: boolean) => void): () => void {
+  wakeListeners.add(fn);
+  return () => wakeListeners.delete(fn);
+}
+
+function sleep(ms: number, signal?: AbortSignal | null): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(resolve, ms);
+    signal?.addEventListener('abort', () => {
+      clearTimeout(timer);
+      reject(new DOMException('Aborted', 'AbortError'));
+    });
+  });
+}
+
+export async function wakeFetch(url: string, init: RequestInit = {}): Promise<Response> {
+  const started = Date.now();
+  let delay = 2_000;
+  for (;;) {
+    try {
+      const response = await fetch(url, init);
+      if (!WAKE_STATUSES.has(response.status) || Date.now() - started > WAKE_BUDGET_MS) {
+        setWaking(false);
+        return response;
+      }
+    } catch (err) {
+      if ((err as Error)?.name === 'AbortError' || Date.now() - started > WAKE_BUDGET_MS) {
+        setWaking(false);
+        throw err;
+      }
+    }
+    setWaking(true);
+    await sleep(delay, init.signal);
+    delay = Math.min(delay + 2_000, 8_000);
+  }
+}
+
 export class ApiError extends Error {
   status: number;
   detail: string;
@@ -89,7 +144,7 @@ export async function getEnvelope<T>(
   params?: Record<string, string | number | undefined | null>,
   signal?: AbortSignal,
 ): Promise<Envelope<T>> {
-  const response = await fetch(withQuery(path, params), {
+  const response = await wakeFetch(withQuery(path, params), {
     signal,
     headers: authHeaders({ Accept: 'application/json' }),
     cache: 'no-store',
@@ -100,7 +155,7 @@ export async function getEnvelope<T>(
 
 /** GET a bare (non-enveloped) resource such as /health. */
 export async function getRaw<T>(path: string, signal?: AbortSignal): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await wakeFetch(`${API_BASE_URL}${path}`, {
     signal,
     headers: authHeaders({ Accept: 'application/json' }),
     cache: 'no-store',
@@ -110,7 +165,7 @@ export async function getRaw<T>(path: string, signal?: AbortSignal): Promise<T> 
 }
 
 export async function postJson<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await wakeFetch(`${API_BASE_URL}${path}`, {
     method: 'POST',
     headers: authHeaders({ 'Content-Type': 'application/json', Accept: 'application/json' }),
     body: JSON.stringify(body),
@@ -121,7 +176,7 @@ export async function postJson<T>(path: string, body: unknown, signal?: AbortSig
 }
 
 export async function postForm<T>(path: string, form: FormData, signal?: AbortSignal): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await wakeFetch(`${API_BASE_URL}${path}`, {
     method: 'POST',
     headers: authHeaders(),
     body: form,

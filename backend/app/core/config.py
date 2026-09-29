@@ -25,6 +25,9 @@ class Settings(BaseSettings):
     supabase_db_url: str = ""  # postgres://... — direct connection, for asyncpg
 
     cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
+    # Extra origins matched by regex, e.g. every Vercel preview deployment:
+    # CORS_ORIGIN_REGEX=https://.*\.vercel\.app  (localhost is always allowed)
+    cors_origin_regex: str = ""
 
     # --- Authentication -------------------------------------------------------
     # JWT_SECRET must be set in production. Left empty, security.py falls back to a

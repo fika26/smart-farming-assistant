@@ -1,0 +1,46 @@
+# Render Blueprint — deploys the FastAPI backend on the free plan.
+# Dashboard → New → Blueprint → pick this repo. Render reads this file.
+services:
+  - type: web
+    name: smart-farming-api
+    runtime: python
+    plan: free
+    region: singapore          # closest Render region to India
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: APP_ENV
+        value: production
+      - key: DATA_SOURCE
+        value: mock
+      - key: MOCK_SCENARIO
+        value: drought_onset
+      - key: REPOSITORY
+        value: memory
+      - key: AUTH_REQUIRED
+        value: "true"
+      # Stable secrets so sign-ins survive the free tier's sleep/restart cycle.
+      - key: JWT_SECRET
+        generateValue: true
+      - key: INGEST_API_KEY
+        generateValue: true
+      # Set after the frontend is deployed, e.g. https://smart-farming.vercel.app
+      - key: CORS_ORIGINS
+        sync: false
+      # Allows Vercel preview URLs too; tighten to your project name if you like,
+      # e.g. https://smart-farming-.*\.vercel\.app
+      - key: CORS_ORIGIN_REGEX
+        value: https://.*\.vercel\.app
+      # Optional: real AI answers. Leave unset to use the built-in rules.
+      - key: AI_PROVIDER
+        value: gemini
+      - key: AI_API_KEY
+        sync: false
+      - key: AI_MODEL
+        value: gemini-2.5-flash
+      - key: AI_BASE_URL
+        value: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent

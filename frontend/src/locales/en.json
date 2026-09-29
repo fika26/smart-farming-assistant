@@ -212,5 +212,6 @@
   "an.res.events": "Times watered",
   "an.res.energy": "Pump electricity",
   "an.res.cost": "Money spent",
-  "an.status.aria": "{label}: {status}"
+  "an.status.aria": "{label}: {status}",
+  "wake.banner": "Starting the farm server — on free hosting it sleeps when idle and can take up to a minute to wake."
 }

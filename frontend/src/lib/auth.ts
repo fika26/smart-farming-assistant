@@ -1,4 +1,4 @@
-import { API_BASE_URL, ApiError, postJson } from '@/lib/api';
+import { API_BASE_URL, ApiError, postJson, wakeFetch } from '@/lib/api';
 import { clearSession, setToken } from '@/lib/session';
 import type { AuthResponse, ForgotPasswordResult, RegisterPayload, User } from '@/types/auth';
 
@@ -26,7 +26,7 @@ export async function fetchCurrentUser(signal?: AbortSignal): Promise<User> {
   const { getToken } = await import('@/lib/session');
   const token = getToken();
   if (!token) throw new ApiError('Not signed in', 401, 'Not signed in');
-  const response = await fetch(`${API_BASE_URL}/auth/me`, {
+  const response = await wakeFetch(`${API_BASE_URL}/auth/me`, {
     headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
     signal,
     cache: 'no-store',
@@ -51,7 +51,7 @@ export async function signOut(): Promise<void> {
 /** Demo credentials, exposed by the backend only while the mock data source is active. */
 export async function fetchDemoAccount(): Promise<{ email: string; password: string } | null> {
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/demo-account`, { cache: 'no-store' });
+    const response = await wakeFetch(`${API_BASE_URL}/auth/demo-account`, { cache: 'no-store' });
     if (!response.ok) return null;
     const body = await response.json();
     return body?.data?.available ? { email: body.data.email, password: body.data.password } : null;

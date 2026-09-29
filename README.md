@@ -1,6 +1,6 @@
 # Smart Farming Assistant
 
-> Review of v5 and what changed: [docs/REVIEW.md](docs/REVIEW.md) · Adding languages: [docs/LOCALIZATION.md](docs/LOCALIZATION.md)
+> **Deploy for free:** [DEPLOY.md](DEPLOY.md) · Review of v5 and what changed: [docs/REVIEW.md](docs/REVIEW.md) · Adding languages: [docs/LOCALIZATION.md](docs/LOCALIZATION.md)
 
 Agricultural intelligence and early-warning system.
 `Sensors → ESP32 edge node → FastAPI → (MongoDB) → rules/AI → Next.js`

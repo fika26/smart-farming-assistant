@@ -212,5 +212,6 @@
   "an.res.events": "कितनी बार पानी दिया",
   "an.res.energy": "पंप की बिजली",
   "an.res.cost": "खर्च हुआ पैसा",
-  "an.status.aria": "{label}: {status}"
+  "an.status.aria": "{label}: {status}",
+  "wake.banner": "फार्म सर्वर शुरू हो रहा है — मुफ़्त होस्टिंग पर यह खाली समय में सो जाता है और जागने में एक मिनट तक लग सकता है।"
 }

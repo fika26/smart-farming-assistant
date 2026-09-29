@@ -150,6 +150,11 @@ async def _ask_gemini(message: str, history: list[dict], system_prompt: str) -> 
         "contents": contents,
         "generationConfig": {"maxOutputTokens": MAX_TOKENS},
     }
+    if "2.5-flash" in settings.ai_model:
+        # 2.5 Flash "thinks" by default and those tokens count against
+        # maxOutputTokens, which can leave an empty reply. Short farm answers
+        # don't need it.
+        payload["generationConfig"]["thinkingConfig"] = {"thinkingBudget": 0}
     url = settings.ai_base_url
     separator = "&" if "?" in url else "?"
     url = f"{url}{separator}key={settings.ai_api_key}"
