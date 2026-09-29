@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-indic: 'Noto Sans Devanagari', 'Noto Sans Telugu', 'Nirmala UI', 'Mangal', 'Gautami';
+  --font-sans: ui-sans-serif, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, var(--font-indic), sans-serif;
+  --font-display: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Times New Roman', var(--font-indic), serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+
+  /* Mirrors src/config/theme.ts — used by non-Tailwind surfaces (charts, SVG). */
+  --color-canvas: #f5f0e6;
+  --color-surface: #ffffff;
+  --color-line: #d9d4c8;
+  --color-ink: #263229;
+  --color-ink-muted: #68736a;
+  --color-leaf-900: #23452f;
+  --color-leaf-500: #5f8062;
+  --color-sage: #a8b99a;
+}
+
+@layer base {
+  * { @apply border-line; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    @apply bg-canvas text-ink antialiased;
+    font-family: var(--font-sans);
+  }
+  h1, h2, h3 { @apply text-ink; letter-spacing: -0.015em; }
+  ::selection { @apply bg-leaf-200 text-leaf-900; }
+  :focus-visible {
+    @apply outline-none ring-2 ring-leaf-500 ring-offset-2 ring-offset-canvas rounded-md;
+  }
+}
+
+@layer utilities {
+  /* Tactile press feedback for anything clickable. */
+  .press { @apply transition-transform duration-100 active:scale-[0.985]; }
+  .interactive {
+    @apply transition-[box-shadow,border-color,background-color,transform] duration-200;
+  }
+}
+
+@layer components {
+  /* One card treatment across the product: near-white surface, thin warm border. */
+  .panel { @apply bg-surface border border-line rounded-xl shadow-card; }
+  .panel-quiet { @apply bg-raised border border-line rounded-xl; }
+  .panel-sand { @apply bg-sand-100 border border-line rounded-xl; }
+  .eyebrow { @apply text-2xs font-semibold uppercase tracking-[0.12em] text-ink-faint; }
+  .num { font-variant-numeric: tabular-nums; }
+  .scroll-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scroll-thin::-webkit-scrollbar-thumb { @apply bg-line-strong rounded-full; }
+  .scroll-thin::-webkit-scrollbar-track { background: transparent; }
+}
+
+.recharts-cartesian-axis-tick text {
+  font-size: 11px;
+  fill: var(--color-ink-muted);
+}
+
+/* Restrained motion by default; none at all when the reader asks for none. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/*
+ * Indic scripts: letter-spacing splits conjuncts and matras apart, and uppercase
+ * does nothing, so the Latin "eyebrow" treatment is dropped. The 11px size is
+ * also too small for Devanagari/Telugu on a phone, so it is raised.
+ */
+html:not([lang='en']) .eyebrow,
+html:not([lang='en']) .text-2xs,
+html:not([lang='en']) [class*='tracking-'] {
+  letter-spacing: 0 !important;
+  text-transform: none;
+}
+html:not([lang='en']) .text-2xs {
+  font-size: 0.75rem;
+  line-height: 1.1rem;
+}
+html:not([lang='en']) body {
+  line-height: 1.6;
+}
