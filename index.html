@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Technovation — The Five Realms</title>
+<meta name="description" content="TECHNOVATION'26 — The Five Realms. The Mechatronics department fest at MGIT, Gandipet, Hyderabad. 16 & 17 October 2026.">
+<meta name="theme-color" content="#07070a">
+<link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta property="og:image" content="assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Technovation’26 — The Five Realms">
+<meta property="og:description" content="The Mechatronics department fest at MGIT, Gandipet, Hyderabad. 16 &amp; 17 October 2026.">
+<meta name="twitter:card" content="summary_large_image">
+<!--HEAD-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;600;700;800&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Chakra+Petch:wght@500;600;700&family=Noto+Sans+Runic&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<!--/HEAD-->
+</head>
+<body>
+<!--BODY-->
+<a class="skip" href="#view">Skip to content</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- eroded / weathered edge for big titles -->
+    <filter id="erode" x="-5%" y="-10%" width="110%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="2.5" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="2" seed="3" result="s"/>
+      <feColorMatrix in="s" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -9 0 0 0 6.1" result="m"/>
+      <feComposite in="d" in2="m" operator="in"/>
+    </filter>
+  </defs>
+</svg>
+
+<!-- ============ GATE (black & white, logo) ============ -->
+<div id="gate" role="dialog" aria-label="Enter Technovation">
+  <canvas id="gate-fx" aria-hidden="true"></canvas>
+  <div class="gate-inner">
+    <div class="gate-sigil" id="gate-sigil" aria-hidden="true"></div>
+    <img class="gate-logo" src="assets/logo-white.webp" alt="Technovation '26 — Mechatronics">
+    <p class="gate-sub">Department of Mechanical (Mechatronics) Engineering · MGIT</p>
+    <noscript><p class="gate-sub">Please turn on JavaScript to enter the realms.</p></noscript>
+    <div class="gate-load" id="gate-load">
+      <div class="gate-bar"><i id="gate-bar"></i></div>
+      <p class="gate-tip" id="gate-tip"></p>
+    </div>
+    <div class="gate-actions" id="gate-actions" hidden>
+      <button class="btn-gate" id="enter-sound">Enter the Realms</button>
+      <button class="btn-quiet" id="enter-quiet">Enter without sound</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ WORLD (fixed scenery) ============ -->
+<div id="world" aria-hidden="true">
+  <div id="scene-img"></div>
+  <canvas id="scene-bg"></canvas>
+  <canvas id="scene-fx"></canvas>
+  <div id="vignette"></div>
+</div>
+
+<!-- ============ HUD ============ -->
+<header id="hud-top">
+  <a href="#home" class="hud-logo" aria-label="Technovation home"><img src="assets/logo-white.webp" alt=""></a>
+  <nav class="hud-nav" id="hud-nav" aria-label="Main">
+    <svg class="nav-frame" viewBox="0 0 1000 70" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M8 6 H992 L962 50 H640 L626 64 H374 L360 50 H38 Z" class="nf-fill"/>
+      <path d="M8 6 H992 L962 50 H640 L626 64 H374 L360 50 H38 Z" class="nf-line"/>
+      <path d="M30 12 H970" class="nf-hair"/>
+    </svg>
+    <a href="#realms" data-nav="realms" title="The five disciplines">Realms<small>The five disciplines</small></a>
+    <a href="#trials" data-nav="trials" title="All 12 events">Trials<small>All 12 events</small></a>
+    <a href="#chronicle" data-nav="chronicle" title="Schedule">Chronicle<small>Schedule</small></a>
+    <a href="#rules" data-nav="rules" title="General rules">Rules<small>Know before you come</small></a>
+    <a href="#map" data-nav="map" title="Campus map">Map<small>Find your way</small></a>
+    <a href="#guild" data-nav="guild" title="Volunteer">Guild<small>Volunteer</small></a>
+    <a href="#patrons" data-nav="patrons" title="Sponsors">Patrons<small>Sponsors</small></a>
+    <a href="#contact" data-nav="contact" title="Get in touch">Contact<small>Get in touch</small></a>
+  </nav>
+  <div class="hud-right">
+    <button id="sound-toggle" class="hud-btn" aria-label="Sound on" title="Soundtrack">
+      <span class="eq"><i></i><i></i><i></i><i></i></span>
+    </button>
+    <button id="menu-toggle" class="hud-btn" aria-label="Open menu" aria-expanded="false">
+      <span class="burger"><i></i><i></i><i></i></span>
+    </button>
+  </div>
+</header>
+
+<aside id="dock" aria-label="Fast travel to a realm"></aside>
+
+<div id="travel" aria-hidden="true">
+  <div class="travel-sigil" id="travel-sigil"></div>
+  <p class="travel-text" id="travel-text"></p>
+</div>
+<div id="discover" aria-hidden="true">
+  <span class="disc-line"></span>
+  <p class="disc-kicker" id="disc-kicker"></p>
+  <p class="disc-title" id="disc-title"></p>
+  <span class="disc-line"></span>
+</div>
+
+<main id="view" tabindex="-1"></main>
+
+<div id="drone" aria-hidden="true"></div>
+
+<script src="js/data.js"></script>
+<script src="js/problems.js"></script>
+<script src="js/art.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/app.js"></script>
+<!--/BODY-->
+</body>
+</html>
